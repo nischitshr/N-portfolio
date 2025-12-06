@@ -1,0 +1,158 @@
+<!-- portfolio/templates/index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Nischit Shrestha — Full Stack Developer. Portfolio showcasing projects, skills, and experience in Django, NestJS, React, and more." />
+  <meta name="keywords" content="Full Stack Developer, Django, NestJS, React, Portfolio, Nischit Shrestha" />
+  <meta name="theme-color" content="#0d1117" />
+  <title>N:PORTFOLIO | Nischit Shrestha</title>
+  <link rel="icon" href="{% static 'images/favicon.ico' %}" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+      <div class="header-container">
+        <nav class="center-nav" role="navigation" aria-label="Main navigation">
+          <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="primary-navigation">☰</button>
+          <ul id="primary-navigation">
+            <li class="logo"><a href="#home" aria-label="Home"><span class="logo-cursive">N</span><span class="visually-hidden">N Portfolio</span></a></li>
+            <li><a href="#home" data-key="Home">Home</a></li>
+            <li><a href="#projects" data-key="Projects">Projects</a></li>
+            <li><a href="#skills" data-key="Skills">Skills</a></li>
+            <li><a href="#experience" data-key="Experience">Experience</a></li>
+            <li><a href="#contact" data-key="Contact">Contact</a></li>
+        </ul>
+    </nav>
+      <div class="theme-lang-wrapper">
+        <div class="theme-switch-wrapper" role="region" aria-label="Theme switch">
+          <div class="theme-label">Theme</div>
+          <input type="checkbox" id="theme-toggle" class="theme-toggle-input" aria-label="Toggle theme">
+          <label for="theme-toggle" class="theme-switch" aria-hidden="true">
+            <span class="switch-thumb" aria-hidden="true"></span>
+          </label>
+        </div>
+        <div class="lang-switch-wrapper" role="region" aria-label="Language switch">
+          <button id="lang-toggle" class="lang-toggle" aria-pressed="false">नेपाली</button>
+        </div>
+      </div>
+</div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="hero-text">
+      <div class="date-time" id="date-time" aria-live="polite"></div>
+        <div class="date-divider" aria-hidden="true"></div>
+        <h1 class="name-title" data-en="NISCHIT SHRESTHA">NISCHIT SHRESTHA</h1>
+      <h2 data-en="Experiencing the Full Stack Developer Life">Experiencing the Full Stack Developer Life</h2>
+      <p data-en="Turning ideas into interactive and scalable web solutions.">Turning ideas into interactive and scalable web solutions.</p>
+      <button class="hire-btn" data-en="Hire Me">Hire Me</button>
+    </div>
+    <img src="{% static 'images/profile.jpg' %}" alt="Profile photo of Nischit Shrestha" class="profile-img" loading="lazy" decoding="async">
+  </section>
+
+  <!-- Experience Section -->
+  <section id="experience" class="experience section">
+    <h2 data-en="Experience">Experience</h2>
+    <div class="exp-list">
+      <div class="exp-card">
+        <h3 data-en="Python Django Intern">Python Django Intern</h3>
+        <p data-en="Worked on CRUD applications, Gunaso API, voting systems, and test management.">Worked on CRUD applications, Gunaso API, voting systems, and test management.</p>
+      </div>
+      <div class="exp-card">
+        <h3 data-en="Backend Intern (NestJS)">Backend Intern (NestJS)</h3>
+        <p data-en="Developed scalable RESTful APIs using NestJS with PostgreSQL and MySQL databases.">Developed scalable RESTful APIs using NestJS with PostgreSQL and MySQL databases.</p>
+      </div>
+      <div class="exp-card">
+        <h3 data-en="Full Stack Intern">Full Stack Intern</h3>
+        <p data-en="Created complete solutions using Next.js, React, and Django for interactive web apps.">Created complete solutions using Next.js, React, and Django for interactive web apps.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section id="skills" class="skills section">
+    <h2 data-en="Skills">Skills</h2>
+    <div class="skills-grid">
+      <div class="skill-category">
+        <h3 data-en="Frontend">Frontend</h3>
+        <p data-en="React, Next.js, HTML, CSS, JavaScript">React, Next.js, HTML, CSS, JavaScript</p>
+      </div>
+      <div class="skill-category">
+        <h3 data-en="Backend">Backend</h3>
+        <p data-en="Python, Django, Node.js, NestJS, FastAPI">Python, Django, Node.js, NestJS, FastAPI</p>
+      </div>
+      <div class="skill-category">
+        <h3 data-en="Database">Database</h3>
+        <p data-en="MySQL, PostgreSQL, DBeaver">MySQL, PostgreSQL, DBeaver</p>
+      </div>
+      <div class="skill-category">
+        <h3 data-en="TypeScript">TypeScript</h3>
+        <p data-en="Strong knowledge of NestJS & Next.js ecosystems">Strong knowledge of NestJS & Next.js ecosystems</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects" class="projects section">
+    <h2 data-en="Projects">Projects</h2>
+    <div class="project-list">
+      <div class="project-card">
+        <img src="{% static 'images/crud.png' %}" alt="CRUD ToDo project screenshot" loading="lazy" decoding="async">
+        <h3 data-en="CRUD To-Do List">CRUD To-Do List</h3>
+      </div>
+      <div class="project-card">
+        <img src="{% static 'images/blogapi.png' %}" alt="Blog API project screenshot" loading="lazy" decoding="async">
+        <h3 data-en="Blog API">Blog API</h3>
+      </div>
+      <div class="project-card">
+        <img src="{% static 'images/vote.png' %}" alt="Voting System project screenshot" loading="lazy" decoding="async">
+        <h3 data-en="Voting System">Voting System</h3>
+      </div>
+      <div class="project-card">
+        <img src="{% static 'images/complaint.png' %}" alt="Gunaso System API screenshot" loading="lazy" decoding="async">
+        <h3 data-en="Gunaso System API">Gunaso System API</h3>
+      </div>
+      <div class="project-card">
+        <img src="{% static 'images/test.png' %}" alt="Test Management API screenshot" loading="lazy" decoding="async">
+        <h3 data-en="Test Management API">Test Management API</h3>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact section">
+    <h2 data-en="Contact">Contact</h2>
+    <p data-en="If you'd like to collaborate, send a message — or use the links below.">If you'd like to collaborate, send a message — or use the links below.</p>
+    <form id="contact-form" class="contact-form" aria-label="Contact form">
+      <label for="cf-name" data-en="Name">Name</label>
+      <input id="cf-name" name="name" type="text" placeholder="Your name" required>
+
+      <label for="cf-email" data-en="Email">Email</label>
+      <input id="cf-email" name="email" type="email" placeholder="you@example.com" required>
+
+      <label for="cf-message" data-en="Message">Message</label>
+      <textarea id="cf-message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
+
+      <button type="submit" class="hire-btn" data-en="Send Message">Send Message</button>
+    </form>
+    <p class="contact-note" data-en="This form opens your email client as a fallback — no server required.">This form opens your email client as a fallback — no server required.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <h2 data-en="Let's Work Together">Let's Work Together</h2>
+    <p data-en="Interested in collaborating? Feel free to reach out!">Interested in collaborating? Feel free to reach out!</p>
+    <div class="links">
+      <a href="mailto:nischitshrestha@example.com" data-en="Email Me">Email Me</a>
+      <a href="https://linkedin.com/in/nischitshrestha" data-en="LinkedIn">LinkedIn</a>
+      <a href="https://github.com/nischitshrestha" data-en="GitHub">GitHub</a>
+    </div>
+  </footer>
+  <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>
