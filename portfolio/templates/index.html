@@ -1,32 +1,53 @@
-<!-- portfolio/templates/index.html -->
+{% load static %}
 <!doctype html>
 <html lang="en">
+
 <head>
-  {% load static %}
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Nischit Shrestha — Full Stack Developer. Portfolio showcasing projects, skills, and experience in Django, NestJS, React, and more." />
-  <meta name="keywords" content="Full Stack Developer, Django, NestJS, React, Portfolio, Nischit Shrestha" />
-  <meta name="theme-color" content="#0d1117" />
-  <title>N:PORTFOLIO | Nischit Shrestha</title>
+
+  <meta name="description" content="{{ settings.site_description|default:'Full Stack Developer Portfolio' }}" />
+  <meta name="keywords" content="{{ settings.meta_keywords|default:'Portfolio, Developer, Django' }}" />
+  <meta name="theme-color" content="#0a0e27" />
+
+  <title>{{ settings.site_title|default:"N:PORTFOLIO" }} | {{ profile.name|default:"Nischit Shrestha" }}</title>
+
+  {% if settings.favicon %}
+  <link rel="icon" href="{{ settings.favicon.url }}" />
+  {% else %}
   <link rel="icon" href="{% static 'images/favicon.ico' %}" />
+  {% endif %}
+
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+
+  <script>
+    const csrfToken = "{{ csrf_token }}";
+  </script>
 </head>
+
 <body>
-  <!-- Header -->
+  <div id="tech-background" aria-hidden="true"></div>
+  <div id="scroll-progress"></div>
+
   <header>
-      <div class="header-container">
-        <nav class="center-nav" role="navigation" aria-label="Main navigation">
-          <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="primary-navigation">☰</button>
-          <ul id="primary-navigation">
-            <li class="logo"><a href="#home" aria-label="Home"><span class="logo-cursive">N</span><span class="visually-hidden">N Portfolio</span></a></li>
-            <li><a href="#home" data-key="Home">Home</a></li>
-            <li><a href="#projects" data-key="Projects">Projects</a></li>
-            <li><a href="#skills" data-key="Skills">Skills</a></li>
-            <li><a href="#experience" data-key="Experience">Experience</a></li>
-            <li><a href="#contact" data-key="Contact">Contact</a></li>
+    <div class="header-container">
+      <nav class="center-nav" role="navigation" aria-label="Main navigation">
+        <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="primary-navigation">☰</button>
+        <ul id="primary-navigation">
+          <li class="logo">
+            <a href="#home" aria-label="Home">
+              <span class="logo-cursive">N</span><span class="visually-hidden">{{ profile.name }} Portfolio</span>
+            </a>
+          </li>
+          <li><a href="#home" data-key="Home">Home</a></li>
+          <li><a href="#education" data-key="Education">Education</a></li>
+          <li><a href="#experience" data-key="Experience">Experience</a></li>
+          <li><a href="#skills" data-key="Skills">Skills</a></li>
+          <li><a href="#projects" data-key="Projects">Projects</a></li>
+          <li><a href="#contact" data-key="Contact">Contact</a></li>
         </ul>
-    </nav>
+      </nav>
       <div class="theme-lang-wrapper">
         <div class="theme-switch-wrapper" role="region" aria-label="Theme switch">
           <div class="theme-label">Theme</div>
@@ -39,96 +60,194 @@
           <button id="lang-toggle" class="lang-toggle" aria-pressed="false">नेपाली</button>
         </div>
       </div>
-</div>
+    </div>
   </header>
 
-  <!-- Hero Section -->
   <section id="home" class="hero">
     <div class="hero-text">
       <div class="date-time" id="date-time" aria-live="polite"></div>
-        <div class="date-divider" aria-hidden="true"></div>
-        <h1 class="name-title" data-en="NISCHIT SHRESTHA">NISCHIT SHRESTHA</h1>
-      <h2 data-en="Experiencing the Full Stack Developer Life">Experiencing the Full Stack Developer Life</h2>
-      <p data-en="Turning ideas into interactive and scalable web solutions.">Turning ideas into interactive and scalable web solutions.</p>
-      <button class="hire-btn" data-en="Hire Me">Hire Me</button>
+      <div class="date-divider" aria-hidden="true"></div>
+      <h1 class="name-title" data-en="{{ profile.name|upper }}">{{ profile.name|upper|default:"NISCHIT SHRESTHA" }}</h1>
+      <h2 data-en="{{ profile.tagline }}">{{ profile.tagline|default:"Experiencing the Full Stack Developer Life and
+        exploring the security world" }}
+      </h2>
+      <p data-en="{{ profile.description }}">{{ profile.description|default:"Turning ideas into interactive and scalable
+        web solutions." }}</p>
+      <a href="#contact" class="hire-btn" style="text-decoration:none; display:inline-block;" data-en="Hire Me">Hire
+        Me</a>
+
+      {% if profile.resume_file %}
+      <a href="{{ profile.resume_file.url }}" target="_blank" class="hire-btn"
+        style="text-decoration:none; display:inline-block; margin-left:10px; background: transparent; border: 1px solid var(--accent);"
+        data-en="Resume">Resume</a>
+      {% endif %}
     </div>
-    <img src="{% static 'images/profile.jpg' %}" alt="Profile photo of Nischit Shrestha" class="profile-img" loading="lazy" decoding="async">
+
+    <div class="profile-slider-container">
+      {% if profile.profile_image %}
+      <img src="{{ profile.profile_image.url }}" alt="Profile photo of {{ profile.name }}"
+        class="profile-img active-slide" data-slide="0" loading="lazy">
+      {% else %}
+      <img src="{% static 'images/profile.jpg' %}" alt="Default Profile" class="profile-img active-slide" data-slide="0"
+        loading="lazy">
+      {% endif %}
+
+      {% for img in profile.images.all %}
+      <img src="{{ img.image.url }}" alt="Profile Slide" class="profile-img" data-slide="{{ forloop.counter }}"
+        style="display:none; opacity:0; position: absolute; top:0; left:0;" loading="lazy">
+      {% endfor %}
+
+      {% if profile.images.exists %}
+      <div class="slider-controls">
+        <button class="slider-arrow prev" onclick="moveSlide(-1)">&#10094;</button>
+        <button class="slider-arrow next" onclick="moveSlide(1)">&#10095;</button>
+      </div>
+      {% endif %}
+    </div>
   </section>
 
-  <!-- Experience Section -->
+  <section id="education" class="education section">
+    <h2 data-en="Education">Education</h2>
+    <div class="edu-list">
+      {% for edu in education %}
+      <div class="edu-card">
+        <h3>{{ edu.degree }}</h3>
+        <p class="edu-institution">{{ edu.institution }}</p>
+        <p class="edu-date">
+          {{ edu.start_date|date:"Y" }} -
+          {% if edu.is_current %}Present{% else %}{{ edu.end_date|date:"Y" }}{% endif %}
+        </p>
+        {% if edu.description %}
+        <p class="edu-desc">{{ edu.description }}</p>
+        {% endif %}
+      </div>
+      {% empty %}
+      <div class="edu-card">
+        <p>Education details coming soon.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
   <section id="experience" class="experience section">
     <h2 data-en="Experience">Experience</h2>
     <div class="exp-list">
+      {% for exp in experiences %}
       <div class="exp-card">
-        <h3 data-en="Python Django Intern">Python Django Intern</h3>
-        <p data-en="Worked on CRUD applications, Gunaso API, voting systems, and test management.">Worked on CRUD applications, Gunaso API, voting systems, and test management.</p>
+        <h3 data-en="{{ exp.title }}">{{ exp.title }}</h3>
+        {% if exp.company %}
+        <p style="color:var(--accent); font-weight:600; font-size:0.9rem; margin-bottom:0.5rem;">{{ exp.company }}</p>
+        {% endif %}
+
+        <p style="font-size:0.85rem; opacity:0.8; margin-bottom:1rem;">
+          {{ exp.start_date|date:"M Y" }} -
+          {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"M Y" }}{% endif %}
+        </p>
+
+        <div class="exp-desc-wrapper">
+          <p class="exp-desc-text" data-full="{{ exp.description }}">
+            {{ exp.description }}
+          </p>
+          <button class="read-more-btn" onclick="openExpModal(this)">Read More</button>
+        </div>
       </div>
+      {% empty %}
       <div class="exp-card">
-        <h3 data-en="Backend Intern (NestJS)">Backend Intern (NestJS)</h3>
-        <p data-en="Developed scalable RESTful APIs using NestJS with PostgreSQL and MySQL databases.">Developed scalable RESTful APIs using NestJS with PostgreSQL and MySQL databases.</p>
+        <p>Experience data coming soon.</p>
       </div>
-      <div class="exp-card">
-        <h3 data-en="Full Stack Intern">Full Stack Intern</h3>
-        <p data-en="Created complete solutions using Next.js, React, and Django for interactive web apps.">Created complete solutions using Next.js, React, and Django for interactive web apps.</p>
-      </div>
+      {% endfor %}
     </div>
   </section>
 
-  <!-- Skills Section -->
   <section id="skills" class="skills section">
     <h2 data-en="Skills">Skills</h2>
     <div class="skills-grid">
-      <div class="skill-category">
-        <h3 data-en="Frontend">Frontend</h3>
-        <p data-en="React, Next.js, HTML, CSS, JavaScript">React, Next.js, HTML, CSS, JavaScript</p>
+      {% for skill in skills %}
+      <div class="skill-card">
+        <div class="skill-icon">
+          {% if skill.icon %}
+          <i class="{{ skill.icon }}"></i>
+          {% else %}
+          <!-- Fallback generic icon if field is empty -->
+          <i class="devicon-devicon-plain"></i>
+          {% endif %}
+        </div>
+        <div class="skill-info">
+          <h3>{{ skill.name }}</h3>
+          <p class="skill-category-label">{{ skill.get_category_display }}</p>
+
+          <div class="skill-progress-wrapper" aria-label="{{ skill.name }} proficiency: {{ skill.proficiency }}%">
+            <div class="skill-progress-bar" style="width: {{ skill.proficiency }}%"></div>
+          </div>
+          <div class="skill-percent">{{ skill.proficiency }}%</div>
+        </div>
       </div>
-      <div class="skill-category">
-        <h3 data-en="Backend">Backend</h3>
-        <p data-en="Python, Django, Node.js, NestJS, FastAPI">Python, Django, Node.js, NestJS, FastAPI</p>
-      </div>
-      <div class="skill-category">
-        <h3 data-en="Database">Database</h3>
-        <p data-en="MySQL, PostgreSQL, DBeaver">MySQL, PostgreSQL, DBeaver</p>
-      </div>
-      <div class="skill-category">
-        <h3 data-en="TypeScript">TypeScript</h3>
-        <p data-en="Strong knowledge of NestJS & Next.js ecosystems">Strong knowledge of NestJS & Next.js ecosystems</p>
-      </div>
+      {% endfor %}
     </div>
   </section>
 
-  <!-- Projects Section -->
   <section id="projects" class="projects section">
     <h2 data-en="Projects">Projects</h2>
     <div class="project-list">
+      {% for project in projects %}
       <div class="project-card">
-        <img src="{% static 'images/crud.png' %}" alt="CRUD ToDo project screenshot" loading="lazy" decoding="async">
-        <h3 data-en="CRUD To-Do List">CRUD To-Do List</h3>
+        {% if project.image %}
+        <img src="{{ project.image.url }}" alt="{{ project.title }} screenshot" loading="lazy" decoding="async">
+        {% else %}
+        <div
+          style="height:200px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.2);">
+          No Image</div>
+        {% endif %}
+
+        <h3 data-en="{{ project.title }}">{{ project.title }}</h3>
+
+        <div class="project-links" style="padding-bottom:20px;">
+          {% if project.project_url %}
+          <a href="{{ project.project_url }}" target="_blank" style="margin-right:10px; color:var(--accent);">Live
+            Demo</a>
+          {% endif %}
+          {% if project.github_url %}
+          <a href="{{ project.github_url }}" target="_blank" style="color:var(--text-secondary);">GitHub</a>
+          {% endif %}
+        </div>
       </div>
+      {% empty %}
       <div class="project-card">
-        <img src="{% static 'images/blogapi.png' %}" alt="Blog API project screenshot" loading="lazy" decoding="async">
-        <h3 data-en="Blog API">Blog API</h3>
+        <h3>Projects coming soon...</h3>
       </div>
-      <div class="project-card">
-        <img src="{% static 'images/vote.png' %}" alt="Voting System project screenshot" loading="lazy" decoding="async">
-        <h3 data-en="Voting System">Voting System</h3>
-      </div>
-      <div class="project-card">
-        <img src="{% static 'images/complaint.png' %}" alt="Gunaso System API screenshot" loading="lazy" decoding="async">
-        <h3 data-en="Gunaso System API">Gunaso System API</h3>
-      </div>
-      <div class="project-card">
-        <img src="{% static 'images/test.png' %}" alt="Test Management API screenshot" loading="lazy" decoding="async">
-        <h3 data-en="Test Management API">Test Management API</h3>
-      </div>
+      {% endfor %}
     </div>
   </section>
 
-  <!-- Contact Section -->
+  {% if settings.enable_testimonials and testimonials %}
+  <section id="testimonials" class="testimonials section">
+    <h2 data-en="Testimonials">Testimonials</h2>
+    <div class="exp-list">
+      {% for test in testimonials %}
+      <div class="exp-card" style="text-align:left;">
+        <p style="font-style:italic;">"{{ test.testimonial }}"</p>
+        <div style="display:flex; align-items:center; margin-top:15px;">
+          {% if test.avatar %}
+          <img src="{{ test.avatar.url }}" style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
+          {% endif %}
+          <div>
+            <h4 style="margin:0; font-size:0.9rem;">{{ test.name }}</h4>
+            <span style="font-size:0.8rem; opacity:0.7;">{{ test.position }} at {{ test.company }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   <section id="contact" class="contact section">
     <h2 data-en="Contact">Contact</h2>
-    <p data-en="If you'd like to collaborate, send a message — or use the links below.">If you'd like to collaborate, send a message — or use the links below.</p>
-    <form id="contact-form" class="contact-form" aria-label="Contact form">
+    <p data-en="If you'd like to collaborate, send a message — or use the links below.">If you'd like to collaborate,
+      send a message — or use the links below.</p>
+
+    <form id="contact-form" class="contact-form" aria-label="Contact form" method="POST">
+      {% csrf_token %}
       <label for="cf-name" data-en="Name">Name</label>
       <input id="cf-name" name="name" type="text" placeholder="Your name" required>
 
@@ -138,21 +257,90 @@
       <label for="cf-message" data-en="Message">Message</label>
       <textarea id="cf-message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
 
-      <button type="submit" class="hire-btn" data-en="Send Message">Send Message</button>
+      <button type="submit" class="hire-btn" id="submit-btn" data-en="Send Message">Send Message</button>
+      <p id="form-status" style="display:none; margin-top:10px;"></p>
     </form>
-    <p class="contact-note" data-en="This form opens your email client as a fallback — no server required.">This form opens your email client as a fallback — no server required.</p>
+
+    <p class="contact-note" data-en="This form sends a message directly to my admin panel.">This form sends a message
+      directly to my admin panel.</p>
   </section>
 
-  <!-- Footer -->
   <footer>
     <h2 data-en="Let's Work Together">Let's Work Together</h2>
-    <p data-en="Interested in collaborating? Feel free to reach out!">Interested in collaborating? Feel free to reach out!</p>
+    <p data-en="Interested in collaborating? Feel free to reach out!">Interested in collaborating? Feel free to reach
+      out!</p>
     <div class="links">
-      <a href="mailto:nischitshrestha@example.com" data-en="Email Me">Email Me</a>
-      <a href="https://linkedin.com/in/nischitshrestha" data-en="LinkedIn">LinkedIn</a>
-      <a href="https://github.com/nischitshrestha" data-en="GitHub">GitHub</a>
+      <a href="mailto:{{ profile.email|default:'example@example.com' }}" data-en="Email Me">Email Me</a>
+
+      <a href="https://www.linkedin.com/in/ni-shrestha/" target="_blank" aria-label="LinkedIn"
+        style="color: inherit; text-decoration: none; margin-left:15px; font-size: 1.5rem; display: inline-flex; align-items: center;">
+        <i class="devicon-linkedin-plain"></i>
+      </a>
+
+      {% if profile.github_url %}
+      <a href="{{ profile.github_url }}" target="_blank" data-en="GitHub">GitHub</a>
+      {% endif %}
+      {% if profile.twitter_url %}
+      <a href="{{ profile.twitter_url }}" target="_blank" data-en="Twitter">Twitter</a>
+      {% endif %}
     </div>
   </footer>
+
+  <!-- Experience Modal -->
+  <div id="exp-modal" class="modal" aria-hidden="true" style="display:none;">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeExpModal()">&times;</span>
+      <h3 id="modal-title"></h3>
+      <p id="modal-company" class="modal-subtitle"></p>
+      <div id="modal-desc" class="modal-body"></div>
+    </div>
+  </div>
+
   <script src="{% static 'js/scripts.js' %}"></script>
+
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      const status = document.getElementById('form-status');
+      const formData = new FormData(this);
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      fetch('/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            status.style.color = 'var(--success, #4CAF50)';
+            status.textContent = data.message;
+            status.style.display = 'block';
+            this.reset();
+          } else {
+            status.style.color = 'var(--danger, #f44336)';
+            status.textContent = 'Error: ' + data.message;
+            status.style.display = 'block';
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          status.style.color = '#f44336';
+          status.textContent = 'Something went wrong. Please try again.';
+          status.style.display = 'block';
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = 'Send Message';
+          setTimeout(() => { status.style.display = 'none'; }, 5000);
+        });
+    });
+  </script>
 </body>
+
 </html>

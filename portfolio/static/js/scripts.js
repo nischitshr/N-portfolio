@@ -1,6 +1,99 @@
 // -----------------------------
+// Scroll Progress Indicator
+// -----------------------------
+window.addEventListener('scroll', () => {
+  const scrollProgress = document.getElementById('scroll-progress');
+  if (!scrollProgress) {
+    const progressBar = document.createElement('div');
+    progressBar.id = 'scroll-progress';
+    document.body.appendChild(progressBar);
+  }
+  
+  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = (winScroll / height) * 100;
+  document.getElementById('scroll-progress').style.width = scrolled + '%';
+});
+
+// -----------------------------
+// Custom Cursor (Desktop only)
+// -----------------------------
+if (window.innerWidth > 768) {
+  const cursorDot = document.createElement('div');
+  cursorDot.className = 'cursor-dot';
+  document.body.appendChild(cursorDot);
+  
+  const cursorOutline = document.createElement('div');
+  cursorOutline.className = 'cursor-outline';
+  document.body.appendChild(cursorOutline);
+  
+  let mouseX = 0, mouseY = 0;
+  let outlineX = 0, outlineY = 0;
+  
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    cursorDot.style.left = mouseX + 'px';
+    cursorDot.style.top = mouseY + 'px';
+  });
+  
+  // Smooth follow for outline
+  function animateOutline() {
+    outlineX += (mouseX - outlineX) * 0.15;
+    outlineY += (mouseY - outlineY) * 0.15;
+    
+    cursorOutline.style.left = outlineX + 'px';
+    cursorOutline.style.top = outlineY + 'px';
+    
+    requestAnimationFrame(animateOutline);
+  }
+  animateOutline();
+  
+  // Expand cursor on hover over interactive elements
+  const interactiveElements = document.querySelectorAll('a, button, input, textarea');
+  interactiveElements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursorOutline.style.width = '50px';
+      cursorOutline.style.height = '50px';
+      cursorDot.style.transform = 'scale(1.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursorOutline.style.width = '30px';
+      cursorOutline.style.height = '30px';
+      cursorDot.style.transform = 'scale(1)';
+    });
+  });
+}
+
+// -----------------------------
 // Fade-in animation when sections appear in viewport
 // -----------------------------
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -100px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, index) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, index * 100); // Stagger animation
+    }
+  });
+}, observerOptions);
+
+// Observe all cards and sections
+document.addEventListener('DOMContentLoaded', () => {
+  const fadeElements = document.querySelectorAll('.exp-card, .skill-category, .project-card');
+  fadeElements.forEach(el => {
+    el.classList.add('fade-in');
+    observer.observe(el);
+  });
+});
+
+// Legacy scroll-based fade-in (backup)
 document.addEventListener("scroll", () => {
   const elements = document.querySelectorAll(".fade-in");
   const triggerBottom = window.innerHeight * 0.85;
@@ -9,8 +102,6 @@ document.addEventListener("scroll", () => {
     const boxTop = el.getBoundingClientRect().top;
     if (boxTop < triggerBottom) {
       el.classList.add("visible");
-    } else {
-      el.classList.remove("visible");
     }
   });
 });
@@ -20,17 +111,21 @@ document.addEventListener("scroll", () => {
 // -----------------------------
 document.querySelectorAll("nav a").forEach(anchor => {
   anchor.addEventListener("click", function (e) {
-    e.preventDefault();
     const href = this.getAttribute("href");
-    const target = document.querySelector(href);
-    if (target) target.scrollIntoView({ behavior: "smooth" });
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
 
-    // Close mobile nav after clicking a link
-    const navList = document.getElementById('primary-navigation');
-    const navToggle = document.getElementById('nav-toggle');
-    if (navList && navList.classList.contains('open')) {
-      navList.classList.remove('open');
-      if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
+      // Close mobile nav after clicking a link
+      const navList = document.getElementById('primary-navigation');
+      const navToggle = document.getElementById('nav-toggle');
+      if (navList && navList.classList.contains('open')) {
+        navList.classList.remove('open');
+        if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
+      }
     }
   });
 });
@@ -65,10 +160,29 @@ if (themeToggleInput) {
 const navToggle = document.getElementById('nav-toggle');
 const navList = document.getElementById('primary-navigation');
 if (navToggle && navList) {
-  navToggle.addEventListener('click', () => {
+  // Toggle menu
+  navToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
     const expanded = navToggle.getAttribute('aria-expanded') === 'true';
     navToggle.setAttribute('aria-expanded', String(!expanded));
     navList.classList.toggle('open');
+  });
+
+  // Close menu when clicking a link
+  const navLinks = navList.querySelectorAll('a');
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      navList.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (navList.classList.contains('open') && !navList.contains(e.target) && e.target !== navToggle) {
+      navList.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }
   });
 }
 
@@ -196,7 +310,6 @@ function setLanguage(lang) {
     if (translations[lang] && translations[lang][enKey]) a.textContent = translations[lang][enKey];
   });
 
-  // hero texts
   // translate any element tagged with data-en (page-wide)
   document.querySelectorAll('[data-en]').forEach(el => {
     const key = el.getAttribute('data-en');
@@ -242,7 +355,6 @@ function renderDateTime(info) {
   const lang = localStorage.getItem('lang') || 'en';
   try {
     let now = info && info.datetime ? new Date(info.datetime) : new Date();
-    // if info has utc_offset and datetime, we rely on datetime. Otherwise use local.
     const dateFormatter = new Intl.DateTimeFormat(lang === 'ne' ? 'ne-NP' : undefined, { dateStyle: 'full' });
     const timeFormatter = new Intl.DateTimeFormat(lang === 'ne' ? 'ne-NP' : undefined, { timeStyle: 'medium' });
     const timeStr = timeFormatter.format(now);
@@ -262,7 +374,6 @@ fetch('https://worldtimeapi.org/api/ip')
     // update every second using the base datetime and incremental seconds
     setInterval(() => {
       if (currentTimeData && currentTimeData.datetime) {
-        // increment stored datetime by 1 second
         currentTimeData.datetime = new Date(new Date(currentTimeData.datetime).getTime() + 1000).toISOString();
       }
       renderDateTime(currentTimeData);
@@ -273,3 +384,237 @@ fetch('https://worldtimeapi.org/api/ip')
     renderDateTime(null);
     setInterval(() => renderDateTime(null), 1000);
   });
+
+// -----------------------------
+// Typing Animation for Hero Section
+// -----------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  const heroSubtitle = document.querySelector('.hero-text h2');
+  if (heroSubtitle) {
+    const originalText = heroSubtitle.textContent;
+    heroSubtitle.textContent = '';
+    heroSubtitle.style.opacity = '1';
+    
+    let charIndex = 0;
+    const typingSpeed = 50;
+    
+    function typeChar() {
+      if (charIndex < originalText.length) {
+        heroSubtitle.textContent += originalText.charAt(charIndex);
+        charIndex++;
+        setTimeout(typeChar, typingSpeed);
+      }
+    }
+    
+    // Start typing after initial animations
+    setTimeout(typeChar, 1200);
+  }
+});
+
+// -----------------------------
+// Parallax Effect on Scroll
+// -----------------------------
+window.addEventListener('scroll', () => {
+  const scrolled = window.pageYOffset;
+  const parallaxElements = document.querySelectorAll('.hero-text');
+  
+  parallaxElements.forEach((el, index) => {
+    const speed = index === 0 ? 0.3 : 0.5;
+    const yPos = -(scrolled * speed);
+    el.style.transform = `translateY(${yPos}px)`;
+  });
+});
+
+// -----------------------------
+// Add Tilt Effect to Cards
+// -----------------------------
+document.querySelectorAll('.exp-card, .skill-category, .project-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = (y - centerY) / 10;
+    const rotateY = (centerX - x) / 10;
+    
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale(1.02)`;
+  });
+  
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+
+// -----------------------------
+// Tech Galaxy Background
+// -----------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const galaxyContainer = document.getElementById('tech-background');
+    if (!galaxyContainer) return;
+
+    const icons = [
+        'devicon-python-plain',
+        'devicon-django-plain',
+        'devicon-java-plain',
+        'devicon-html5-plain',
+        'devicon-css3-plain',
+        'devicon-javascript-plain',
+        'devicon-typescript-plain',
+        'devicon-nestjs-plain',
+        'devicon-nextjs-plain',
+        'devicon-react-original',
+        'devicon-kaggle-plain',
+        'devicon-cplusplus-plain',
+        'devicon-jupyter-plain',
+        'devicon-rstudio-plain',
+        'devicon-git-plain',
+        'devicon-docker-plain',
+        'devicon-postgresql-plain'
+    ];
+
+    const iconCount = 30; // Number of floating icons
+
+    for (let i = 0; i < iconCount; i++) {
+        const iconClass = icons[Math.floor(Math.random() * icons.length)];
+        const el = document.createElement('i');
+        
+        // Add classes
+        el.classList.add('galaxy-icon', iconClass);
+        // Sometimes use colored version for subtle variety? No, stick to white/monochrome for background subtle
+        // el.classList.add('colored'); 
+
+        // Random Properties
+        const left = Math.random() * 100; // 0-100vw
+        const duration = 15 + Math.random() * 25; // 15-40s duration
+        const delay = -Math.random() * 40; // Start instantly at random positions
+        const size = 20 + Math.random() * 40; // 20-60px size
+
+        el.style.left = `${left}%`;
+        el.style.animationDuration = `${duration}s`;
+        el.style.animationDelay = `${delay}s`;
+        el.style.fontSize = `${size}px`;
+        
+        el.style.opacity = (0.1 + Math.random() * 0.15).toString();
+
+        galaxyContainer.appendChild(el);
+    }
+});
+
+// -----------------------------
+// Profile Slider Logic
+// -----------------------------
+let currentSlideIndex = 0;
+
+function moveSlide(direction) {
+    const slides = document.querySelectorAll('.profile-slider-container .profile-img');
+    if (slides.length <= 1) return;
+
+    // Current Slide
+    const currentSlide = slides[currentSlideIndex];
+    
+    // Hide current
+    currentSlide.classList.remove('active-slide');
+    currentSlide.style.opacity = '0';
+    // Use timeout to set display:none after transition (0.5s match CSS)
+    setTimeout(() => {
+         if (!currentSlide.classList.contains('active-slide')) {
+             currentSlide.style.display = 'none';
+         }
+    }, 500);
+
+    // Update Index
+    currentSlideIndex += direction;
+    if (currentSlideIndex >= slides.length) currentSlideIndex = 0;
+    if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
+
+    // Show Next
+    const nextSlide = slides[currentSlideIndex];
+    // Must be block before opacity change
+    nextSlide.style.display = 'block'; 
+    
+    // Small delay to trigger transition
+    setTimeout(() => {
+        nextSlide.classList.add('active-slide');
+        nextSlide.style.opacity = '1';
+    }, 20);
+}
+
+// Ensure first slide is set up correctly on load (Standard HTML does this, but JS reinforcement)
+document.addEventListener('DOMContentLoaded', () => {
+    const slides = document.querySelectorAll('.profile-slider-container .profile-img');
+    if (slides.length > 0) {
+        slides.forEach((slide, index) => {
+            if (index === 0) {
+                slide.style.display = 'block';
+                slide.style.opacity = '1';
+                slide.classList.add('active-slide');
+            } else {
+                slide.style.display = 'none';
+                slide.style.opacity = '0';
+            }
+        });
+    }
+});
+
+
+// -----------------------------
+// Experience Modal Logic
+// -----------------------------
+function openExpModal(btn) {
+    const wrapper = btn.closest('.exp-desc-wrapper');
+    const textEl = wrapper.querySelector('.exp-desc-text');
+    // Allow data-full or just read text if not present, but template has data-full
+    const fullText = textEl.getAttribute('data-full') || textEl.innerText;
+    
+    const card = btn.closest('.exp-card');
+    const title = card.querySelector('h3').innerText;
+    
+    // Get company (styled p tag)
+    // We try to find the p with font-weight:600 style, might be fragile if styles move to CSS classes
+    // But currently it's inline style in template
+    let company = '';
+    const companyEl = card.querySelector('p[style*="font-weight:600"]');
+    if (companyEl) company = companyEl.innerText;
+
+    let date = '';
+    const dateEl = card.querySelector('p[style*="font-size:0.85rem"]');
+    if (dateEl) date = dateEl.innerText;
+    
+    const modal = document.getElementById('exp-modal');
+    document.getElementById('modal-title').innerText = title;
+    
+    const subtitle = [company, date].filter(Boolean).join(' | ');
+    document.getElementById('modal-company').innerText = subtitle;
+    
+    document.getElementById('modal-desc').innerText = fullText;
+    
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden'; 
+}
+
+function closeExpModal() {
+    const modal = document.getElementById('exp-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+}
+
+// Close on click outside
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('exp-modal');
+    if (e.target === modal) {
+        closeExpModal();
+    }
+});
+
+// Attach to window to ensure global access from HTML onclick
+window.openExpModal = openExpModal;
+window.closeExpModal = closeExpModal;
+
+

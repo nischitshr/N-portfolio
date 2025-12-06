@@ -72,8 +72,16 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'portfolio', 'static'),  # our static folder
 ]
 
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Optional: you can define a default theme for the portfolio
 DEFAULT_THEME = 'dark'  # dark mode by default; JS toggle will switch
+
+# Email Backend (Prints to console for development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

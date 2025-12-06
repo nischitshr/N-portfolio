@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}N:PORTFOLIO Admin{% endblock %}
+
+{% block branding %}
+<div class="admin-branding">
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            <span class="brand-n">N</span>:PORTFOLIO
+        </a>
+    </h1>
+</div>
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/admin_theme.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+{% endblock %}
