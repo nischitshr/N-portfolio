@@ -18,8 +18,12 @@
   <link rel="icon" href="{% static 'images/favicon.ico' %}" />
   {% endif %}
 
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v={% now 'U' %}">
   <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <script>
     const csrfToken = "{{ csrf_token }}";
@@ -64,225 +68,244 @@
   </header>
 
   <section id="home" class="hero">
-    <div class="hero-text">
-      <div class="date-time" id="date-time" aria-live="polite"></div>
-      <div class="date-divider" aria-hidden="true"></div>
-      <h1 class="name-title" data-en="{{ profile.name|upper }}">{{ profile.name|upper|default:"NISCHIT SHRESTHA" }}</h1>
-      <h2 data-en="{{ profile.tagline }}">{{ profile.tagline|default:"Experiencing the Full Stack Developer Life and
-        exploring the security world" }}
-      </h2>
-      <p data-en="{{ profile.description }}">{{ profile.description|default:"Turning ideas into interactive and scalable
-        web solutions." }}</p>
-      <a href="#contact" class="hire-btn" style="text-decoration:none; display:inline-block;" data-en="Hire Me">Hire
-        Me</a>
+    <div class="container hero-content">
+      <div class="hero-text">
+        <div class="date-time" id="date-time" aria-live="polite"></div>
+        <div class="date-divider" aria-hidden="true"></div>
+        <h1 class="name-title" data-en="{{ profile.name|upper }}">{{ profile.name|upper|default:"NISCHIT SHRESTHA" }}
+        </h1>
+        <h2 data-en="{{ profile.tagline }}">{{ profile.tagline|default:"Experiencing the Full Stack Developer Life and
+          exploring the security world" }}
+        </h2>
+        <p data-en="{{ profile.description }}">{{ profile.description|default:"Turning ideas into interactive and
+          scalable
+          web solutions." }}</p>
+        <a href="#contact" class="hire-btn" style="text-decoration:none; display:inline-block;" data-en="Hire Me">Hire
+          Me</a>
 
-      {% if profile.resume_file %}
-      <a href="{{ profile.resume_file.url }}" target="_blank" class="hire-btn"
-        style="text-decoration:none; display:inline-block; margin-left:10px; background: transparent; border: 1px solid var(--accent);"
-        data-en="Resume">Resume</a>
-      {% endif %}
-    </div>
-
-    <div class="profile-slider-container">
-      {% if profile.profile_image %}
-      <img src="{{ profile.profile_image.url }}" alt="Profile photo of {{ profile.name }}"
-        class="profile-img active-slide" data-slide="0" loading="lazy">
-      {% else %}
-      <img src="{% static 'images/profile.jpg' %}" alt="Default Profile" class="profile-img active-slide" data-slide="0"
-        loading="lazy">
-      {% endif %}
-
-      {% for img in profile.images.all %}
-      <img src="{{ img.image.url }}" alt="Profile Slide" class="profile-img" data-slide="{{ forloop.counter }}"
-        style="display:none; opacity:0; position: absolute; top:0; left:0;" loading="lazy">
-      {% endfor %}
-
-      {% if profile.images.exists %}
-      <div class="slider-controls">
-        <button class="slider-arrow prev" onclick="moveSlide(-1)">&#10094;</button>
-        <button class="slider-arrow next" onclick="moveSlide(1)">&#10095;</button>
+        {% if profile.resume_file %}
+        <a href="{{ profile.resume_file.url }}" target="_blank" class="hire-btn"
+          style="text-decoration:none; display:inline-block; margin-left:10px; background: transparent; border: 1px solid var(--accent); color: var(--accent)"
+          data-en="Resume">Resume</a>
+        {% endif %}
       </div>
-      {% endif %}
+
+      <div class="profile-slider-container">
+        {% if profile.profile_image %}
+        <img src="{{ profile.profile_image.url }}" alt="Profile photo of {{ profile.name }}"
+          class="profile-img active-slide" data-slide="0" loading="lazy">
+        {% else %}
+        <img src="{% static 'images/profile.jpg' %}" alt="Default Profile" class="profile-img active-slide"
+          data-slide="0" loading="lazy">
+        {% endif %}
+
+        {% for img in profile.images.all %}
+        <img src="{{ img.image.url }}" alt="Profile Slide" class="profile-img" data-slide="{{ forloop.counter }}"
+          style="display:none; opacity:0; position: absolute; top:0; left:0;" loading="lazy">
+        {% endfor %}
+
+        {% if profile.images.exists %}
+        <div class="slider-controls">
+          <button class="slider-arrow prev" onclick="moveSlide(-1)">&#10094;</button>
+          <button class="slider-arrow next" onclick="moveSlide(1)">&#10095;</button>
+        </div>
+        {% endif %}
+      </div>
     </div>
   </section>
 
   <section id="education" class="education section">
-    <h2 data-en="Education">Education</h2>
-    <div class="edu-list">
-      {% for edu in education %}
-      <div class="edu-card">
-        <h3>{{ edu.degree }}</h3>
-        <p class="edu-institution">{{ edu.institution }}</p>
-        <p class="edu-date">
-          {{ edu.start_date|date:"Y" }} -
-          {% if edu.is_current %}Present{% else %}{{ edu.end_date|date:"Y" }}{% endif %}
-        </p>
-        {% if edu.description %}
-        <p class="edu-desc">{{ edu.description }}</p>
-        {% endif %}
+    <div class="container">
+      <h2 data-en="Education">Education</h2>
+      <div class="edu-list">
+        {% for edu in education %}
+        <div class="edu-card">
+          <h3>{{ edu.degree }}</h3>
+          <p class="edu-institution">{{ edu.institution }}</p>
+          <p class="edu-date">
+            {{ edu.start_date|date:"Y" }} -
+            {% if edu.is_current %}Present{% else %}{{ edu.end_date|date:"Y" }}{% endif %}
+          </p>
+          {% if edu.description %}
+          <p class="edu-desc">{{ edu.description }}</p>
+          {% endif %}
+        </div>
+        {% empty %}
+        <div class="edu-card">
+          <p>Education details coming soon.</p>
+        </div>
+        {% endfor %}
       </div>
-      {% empty %}
-      <div class="edu-card">
-        <p>Education details coming soon.</p>
-      </div>
-      {% endfor %}
     </div>
   </section>
 
   <section id="experience" class="experience section">
-    <h2 data-en="Experience">Experience</h2>
-    <div class="exp-list">
-      {% for exp in experiences %}
-      <div class="exp-card">
-        <h3 data-en="{{ exp.title }}">{{ exp.title }}</h3>
-        {% if exp.company %}
-        <p style="color:var(--accent); font-weight:600; font-size:0.9rem; margin-bottom:0.5rem;">{{ exp.company }}</p>
-        {% endif %}
+    <div class="container">
+      <h2 data-en="Experience">Experience</h2>
+      <div class="exp-list">
+        {% for exp in experiences %}
+        <div class="exp-card">
+          <h3 data-en="{{ exp.title }}">{{ exp.title }}</h3>
+          {% if exp.company %}
+          <p style="color:var(--accent); font-weight:600; font-size:0.9rem; margin-bottom:0.5rem;">{{ exp.company }}</p>
+          {% endif %}
 
-        <p style="font-size:0.85rem; opacity:0.8; margin-bottom:1rem;">
-          {{ exp.start_date|date:"M Y" }} -
-          {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"M Y" }}{% endif %}
-        </p>
-
-        <div class="exp-desc-wrapper">
-          <p class="exp-desc-text" data-full="{{ exp.description }}">
-            {{ exp.description }}
+          <p style="font-size:0.85rem; opacity:0.8; margin-bottom:1rem;">
+            {{ exp.start_date|date:"M Y" }} -
+            {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"M Y" }}{% endif %}
           </p>
-          <button class="read-more-btn" onclick="openExpModal(this)">Read More</button>
+
+          <div class="exp-desc-wrapper">
+            <p class="exp-desc-text" data-full="{{ exp.description }}">
+              {{ exp.description }}
+            </p>
+            <button class="read-more-btn" onclick="openExpModal(this)">Read More</button>
+          </div>
         </div>
+        {% empty %}
+        <div class="exp-card">
+          <p>Experience data coming soon.</p>
+        </div>
+        {% endfor %}
       </div>
-      {% empty %}
-      <div class="exp-card">
-        <p>Experience data coming soon.</p>
-      </div>
-      {% endfor %}
     </div>
   </section>
 
   <section id="skills" class="skills section">
-    <h2 data-en="Skills">Skills</h2>
-    <div class="skills-grid">
-      {% for skill in skills %}
-      <div class="skill-card">
-        <div class="skill-icon">
-          {% if skill.icon %}
-          <i class="{{ skill.icon }}"></i>
-          {% else %}
-          <!-- Fallback generic icon if field is empty -->
-          <i class="devicon-devicon-plain"></i>
-          {% endif %}
-        </div>
-        <div class="skill-info">
-          <h3>{{ skill.name }}</h3>
-          <p class="skill-category-label">{{ skill.get_category_display }}</p>
-
-          <div class="skill-progress-wrapper" aria-label="{{ skill.name }} proficiency: {{ skill.proficiency }}%">
-            <div class="skill-progress-bar" style="width: {{ skill.proficiency }}%"></div>
+    <div class="container">
+      <h2 data-en="Skills">Skills</h2>
+      <div class="skills-grid">
+        {% for skill in skills %}
+        <div class="skill-card">
+          <div class="skill-icon">
+            {% if skill.icon %}
+            <i class="{{ skill.icon }}"></i>
+            {% else %}
+            <!-- Fallback generic icon if field is empty -->
+            <i class="devicon-devicon-plain"></i>
+            {% endif %}
           </div>
-          <div class="skill-percent">{{ skill.proficiency }}%</div>
+          <div class="skill-info">
+            <h3>{{ skill.name }}</h3>
+            <p class="skill-category-label">{{ skill.get_category_display }}</p>
+
+            <div class="skill-progress-wrapper" aria-label="{{ skill.name }} proficiency: {{ skill.proficiency }}%">
+              <div class="skill-progress-bar" style="width: {{ skill.proficiency }}%"></div>
+            </div>
+            <div class="skill-percent">{{ skill.proficiency }}%</div>
+          </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
   </section>
 
   <section id="projects" class="projects section">
-    <h2 data-en="Projects">Projects</h2>
-    <div class="project-list">
-      {% for project in projects %}
-      <div class="project-card">
-        {% if project.image %}
-        <img src="{{ project.image.url }}" alt="{{ project.title }} screenshot" loading="lazy" decoding="async">
-        {% else %}
-        <div
-          style="height:200px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.2);">
-          No Image</div>
-        {% endif %}
-
-        <h3 data-en="{{ project.title }}">{{ project.title }}</h3>
-
-        <div class="project-links" style="padding-bottom:20px;">
-          {% if project.project_url %}
-          <a href="{{ project.project_url }}" target="_blank" style="margin-right:10px; color:var(--accent);">Live
-            Demo</a>
+    <div class="container">
+      <h2 data-en="Projects">Projects</h2>
+      <div class="project-list">
+        {% for project in projects %}
+        <div class="project-card">
+          {% if project.image %}
+          <img src="{{ project.image.url }}" alt="{{ project.title }} screenshot" loading="lazy" decoding="async">
+          {% else %}
+          <div
+            style="height:200px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.2);">
+            No Image</div>
           {% endif %}
-          {% if project.github_url %}
-          <a href="{{ project.github_url }}" target="_blank" style="color:var(--text-secondary);">GitHub</a>
-          {% endif %}
+
+          <h3 data-en="{{ project.title }}">{{ project.title }}</h3>
+
+          <div class="project-links" style="padding-bottom:20px;">
+            {% if project.project_url %}
+            <a href="{{ project.project_url }}" target="_blank" style="margin-right:10px; color:var(--accent);">Live
+              Demo</a>
+            {% endif %}
+            {% if project.github_url %}
+            <a href="{{ project.github_url }}" target="_blank" style="color:var(--text-secondary);">GitHub</a>
+            {% endif %}
+          </div>
         </div>
+        {% empty %}
+        <div class="project-card">
+          <h3>Projects coming soon...</h3>
+        </div>
+        {% endfor %}
       </div>
-      {% empty %}
-      <div class="project-card">
-        <h3>Projects coming soon...</h3>
-      </div>
-      {% endfor %}
     </div>
   </section>
 
   {% if settings.enable_testimonials and testimonials %}
   <section id="testimonials" class="testimonials section">
-    <h2 data-en="Testimonials">Testimonials</h2>
-    <div class="exp-list">
-      {% for test in testimonials %}
-      <div class="exp-card" style="text-align:left;">
-        <p style="font-style:italic;">"{{ test.testimonial }}"</p>
-        <div style="display:flex; align-items:center; margin-top:15px;">
-          {% if test.avatar %}
-          <img src="{{ test.avatar.url }}" style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
-          {% endif %}
-          <div>
-            <h4 style="margin:0; font-size:0.9rem;">{{ test.name }}</h4>
-            <span style="font-size:0.8rem; opacity:0.7;">{{ test.position }} at {{ test.company }}</span>
+    <div class="container">
+      <h2 data-en="Testimonials">Testimonials</h2>
+      <div class="exp-list">
+        {% for test in testimonials %}
+        <div class="exp-card" style="text-align:left;">
+          <p style="font-style:italic;">"{{ test.testimonial }}"</p>
+          <div style="display:flex; align-items:center; margin-top:15px;">
+            {% if test.avatar %}
+            <img src="{{ test.avatar.url }}" style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
+            {% endif %}
+            <div>
+              <h4 style="margin:0; font-size:0.9rem;">{{ test.name }}</h4>
+              <span style="font-size:0.8rem; opacity:0.7;">{{ test.position }} at {{ test.company }}</span>
+            </div>
           </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
   </section>
   {% endif %}
 
   <section id="contact" class="contact section">
-    <h2 data-en="Contact">Contact</h2>
-    <p data-en="If you'd like to collaborate, send a message — or use the links below.">If you'd like to collaborate,
-      send a message — or use the links below.</p>
+    <div class="container">
+      <h2 data-en="Contact">Contact</h2>
+      <p data-en="If you'd like to collaborate, send a message — or use the links below.">If you'd like to collaborate,
+        send a message — or use the links below.</p>
 
-    <form id="contact-form" class="contact-form" aria-label="Contact form" method="POST">
-      {% csrf_token %}
-      <label for="cf-name" data-en="Name">Name</label>
-      <input id="cf-name" name="name" type="text" placeholder="Your name" required>
+      <form id="contact-form" class="contact-form" aria-label="Contact form" method="POST">
+        {% csrf_token %}
+        <label for="cf-name" data-en="Name">Name</label>
+        <input id="cf-name" name="name" type="text" placeholder="Your name" required>
 
-      <label for="cf-email" data-en="Email">Email</label>
-      <input id="cf-email" name="email" type="email" placeholder="you@example.com" required>
+        <label for="cf-email" data-en="Email">Email</label>
+        <input id="cf-email" name="email" type="email" placeholder="you@example.com" required>
 
-      <label for="cf-message" data-en="Message">Message</label>
-      <textarea id="cf-message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
+        <label for="cf-message" data-en="Message">Message</label>
+        <textarea id="cf-message" name="message" rows="5" placeholder="Tell me about your project..."
+          required></textarea>
 
-      <button type="submit" class="hire-btn" id="submit-btn" data-en="Send Message">Send Message</button>
-      <p id="form-status" style="display:none; margin-top:10px;"></p>
-    </form>
+        <button type="submit" class="hire-btn" id="submit-btn" data-en="Send Message">Send Message</button>
+        <p id="form-status" style="display:none; margin-top:10px;"></p>
+      </form>
 
-    <p class="contact-note" data-en="This form sends a message directly to my admin panel.">This form sends a message
-      directly to my admin panel.</p>
+      <p class="contact-note" data-en="This form sends a message directly to my admin panel.">This form sends a message
+        directly to my admin panel.</p>
+    </div>
   </section>
 
   <footer>
-    <h2 data-en="Let's Work Together">Let's Work Together</h2>
-    <p data-en="Interested in collaborating? Feel free to reach out!">Interested in collaborating? Feel free to reach
-      out!</p>
-    <div class="links">
-      <a href="mailto:{{ profile.email|default:'example@example.com' }}" data-en="Email Me">Email Me</a>
+    <div class="container">
+      <h2 data-en="Let's Work Together">Let's Work Together</h2>
+      <p data-en="Interested in collaborating? Feel free to reach out!">Interested in collaborating? Feel free to reach
+        out!</p>
+      <div class="links">
+        <a href="mailto:{{ profile.email|default:'example@example.com' }}" data-en="Email Me">Email Me</a>
 
-      <a href="https://www.linkedin.com/in/ni-shrestha/" target="_blank" aria-label="LinkedIn"
-        style="color: inherit; text-decoration: none; margin-left:15px; font-size: 1.5rem; display: inline-flex; align-items: center;">
-        <i class="devicon-linkedin-plain"></i>
-      </a>
+        <a href="https://www.linkedin.com/in/ni-shrestha/" target="_blank" aria-label="LinkedIn"
+          style="color: inherit; text-decoration: none; margin-left:15px; font-size: 1.5rem; display: inline-flex; align-items: center;">
+          <i class="devicon-linkedin-plain"></i>
+        </a>
 
-      {% if profile.github_url %}
-      <a href="{{ profile.github_url }}" target="_blank" data-en="GitHub">GitHub</a>
-      {% endif %}
-      {% if profile.twitter_url %}
-      <a href="{{ profile.twitter_url }}" target="_blank" data-en="Twitter">Twitter</a>
-      {% endif %}
+        {% if profile.github_url %}
+        <a href="{{ profile.github_url }}" target="_blank" data-en="GitHub">GitHub</a>
+        {% endif %}
+        {% if profile.twitter_url %}
+        <a href="{{ profile.twitter_url }}" target="_blank" data-en="Twitter">Twitter</a>
+        {% endif %}
+      </div>
     </div>
   </footer>
 
@@ -296,7 +319,7 @@
     </div>
   </div>
 
-  <script src="{% static 'js/scripts.js' %}"></script>
+  <script src="{% static 'js/scripts.js' %}?v={% now 'U' %}"></script>
 
   <script>
     document.getElementById('contact-form').addEventListener('submit', function (e) {
