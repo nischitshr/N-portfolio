@@ -1,1 +1,1 @@
-gunicorn n-portfolio.wsgi:application
+gunicorn nischit_portfolio.wsgi:application
